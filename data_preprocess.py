@@ -58,6 +58,7 @@ def process_wav(utter_path, utter_min_len, mel_calculator):
         except Exception as e:
             print(e)
             print('error for {}'.format(utter_path))
+            continue
         i = 0
         while S.shape[1] >= hp.data.tisv_frame * (i+1):
             specs.append(S[:, int(hp.data.tisv_frame*i):int(hp.data.tisv_frame*(i+1))])

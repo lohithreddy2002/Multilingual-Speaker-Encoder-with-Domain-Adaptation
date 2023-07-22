@@ -1,5 +1,5 @@
-training: !!bool "false"
-device: "cuda"
+training: !!bool "true"
+device: "cpu"
 datasets:
     VCTK:
         root: '~/Downloads/VCTK-Corpus'
@@ -7,7 +7,10 @@ datasets:
     JVS:
         root: '~/Downloads/jvs_ver1'
         test_speakers: ['jvs001', 'jvs014', 'jvs021', 'jvs036', 'jvs071', 'jvs084', 'jvs092', 'jvs098']
-train_datasets: ['JVS', 'VCTK']
+    TEL:
+        root: "/home/lohith/telugu_dataset"
+        test_speakers: ['08318', '04830', '09935','09015', '09584', '06885']
+train_datasets: ["TEL"]
 test_speaker_per_dataset: 8
 
 ---
@@ -37,17 +40,17 @@ model:
     architecture: 'LSTM'
 ---
 train:
-    N : 32 #Number of speakers in batch
+    N : 4 #Number of speakers in batch
     M : 10 #Number of utterances per speaker
-    num_workers: 0 #number of workers for dataloader
+    num_workers: 4 #number of workers for dataloader
     lr: 0.001 
     epochs: 2400 #Max training speaker epoch 
     log_interval: 5 #Epochs before printing progress
     log_file: './log.txt'
     checkpoint_interval: 200 #Save model after x speaker epochs
     checkpoint_dir: './output'
-    restore: false #Resume training from previous model path
-    start_epoch: 0
+    restore: true #Resume training from previous model path
+    start_epoch: 2000
     anneal_epochs: [800, 1400, 1800, 2200]
     parallel: false
     k: 5

@@ -124,7 +124,6 @@ def train(model_path):
                     collate_fn=Collate(True)) 
     
     embedder_net = SpeechEmbedder().to(device)
-    print(embedder_net)
     if hp.train.parallel:
         dist.init_process_group()
         embedder_net_run = DDP(embedder_net)
@@ -200,9 +199,9 @@ def train(model_path):
                     mesg += "\tDALoss:{0:.2f}\tDAAcc:{1:.2f}".format(da_loss, acc)
                 mesg += '\n'
                 print(mesg)
-                #if hp.train.log_file is not None:
-                    #with open(hp.train.log_file,'a') as f:
-                        #f.write(mesg)
+                if hp.train.log_file is not None:
+                    with open(hp.train.log_file,'a') as f:
+                        f.write(mesg)
         etime = time.time()
         lr_schedule(optimizers, e, ['main', 'ge2e'])
         avg_loss = float(total_loss) / (batch_id + 1)
@@ -466,7 +465,7 @@ def optim_step(optimizers, keys):
         
 if __name__=="__main__":
     epoch = hp.train.start_epoch if hp.train.restore else hp.train.epochs
-    path = join(hp.train.checkpoint_dir, hp.model.model_name+'_{}.model'.format(epoch))
+    path = join(hp.train.checkpoint_dir, "ckpt_"+hp.model.model_name+'_epoch_{}_batch_id_10.pth'.format(epoch))
     if hp.training:
         cmd = 'cp ./config/config.yaml {}'.format(join(hp.train.checkpoint_dir, hp.model.model_name+'_{}.config'.format(epoch)))
         subprocess.run(cmd, shell=True)

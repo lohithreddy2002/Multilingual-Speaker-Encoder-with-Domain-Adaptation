@@ -79,7 +79,7 @@ class TacotronSTFT(torch.nn.Module):
         self.mel_fmax = mel_fmax
         self.stft_fn = STFT(filter_length, hop_length, win_length)
         mel_basis = librosa_mel_fn(
-            sampling_rate, filter_length, n_mel_channels, mel_fmin, mel_fmax)
+            sr=sampling_rate, n_fft=filter_length,n_mels= n_mel_channels,fmin= mel_fmin,fmax= mel_fmax)
         mel_basis = torch.from_numpy(mel_basis).float()
         self.register_buffer('mel_basis', mel_basis)
         print(self)

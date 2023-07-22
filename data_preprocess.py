@@ -42,7 +42,7 @@ def process_wav(utter_path, utter_min_len, mel_calculator):
     #utter, sr = librosa.core.load(utter_path, hp.data.sr)        # load utterance audio
     utter, sr = sf.read(utter_path)
     if sr != hp.data.sr:
-        utter = librosa.resample(utter, sr, hp.data.sr)
+        utter = librosa.resample(utter, orig_sr=sr, target_sr= hp.data.sr)
     intervals = librosa.effects.split(utter, top_db=100)         # voice activity detection 
     # for vctk dataset use top_db=100
     if len(intervals) == 0:
@@ -68,9 +68,11 @@ def process_wav(utter_path, utter_min_len, mel_calculator):
         
 def process_spkr_wavlist(data, ds, utter_min_len, test_spkrlist):
     mel_calculator = TextMelLoaderStatic(hp)
+    print("mel",mel_calculator)
     for spkr, wavlist in data:
         specs = []
         gender = ds.get_gender(spkr)
+        print(gender)
         path = data_template.format(dataset=ds._name, spkr=spkr, gender=gender, language=ds._language)
         if spkr in test_spkrlist:
             path = join(hp.data.test_path, path)
@@ -112,8 +114,9 @@ def save_spectrogram_tisv():
         test_spkrlist = ds.test_speakers
         print('test spkrs: {}'.format(','.join(test_spkrlist)))
         data = [(s, w) for s, w in ds.spkr_wavlist()]
-        process_funct = partial(process_spkr_wavlist, ds=ds, utter_min_len=utter_min_len, test_spkrlist=test_spkrlist)
-        _ = pool_map(process_funct, data, mode='Process', max_workers=16)
+        # process_funct = partial(process_spkr_wavlist, ds=ds, utter_min_len=utter_min_len, test_spkrlist=test_spkrlist)
+        process_spkr_wavlist(data,ds,utter_min_len,test_spkrlist)
+        # _ = pool_map(process_funct, data, mode='Process', max_workers=16,chunksize=1000)
 
 if __name__ == "__main__":
     save_spectrogram_tisv()
